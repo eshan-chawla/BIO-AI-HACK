@@ -7,11 +7,12 @@ base_url = "https://app.tamarind.bio/api/"
 
 
 # upload file
-'''local_filepath = "SO4_ideal.sdf"
+local_filepath = "SO4_ideal.sdf"
 uploaded_filename = "SO4_ideal.sdf"
 response = requests.put(f"{base_url}upload/{uploaded_filename}", headers=headers, data=open(local_filepath, 'rb'))
 print(response.status_code)
 # you can now use "file1.txt" as an input for your jobs
+
 # request job
 params = {
   "jobName": "myJobName",
@@ -25,7 +26,7 @@ params = {
   }
 }
 response = requests.post(base_url + "submit-job", headers=headers, json=params)
-print(response.text)'''
+print(response.text)
 
 # get job result
 jobName = "myJobName"
