@@ -352,7 +352,7 @@ export default function DemoPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '1rem' }}>
           <div>
             <p>How to read this heatmap? <a href="#" style={{ color: '#0070f3' }}>Click to expand</a></p>
-            <img src="https://placehold.co/400x300/222/eee?text=Heatmap" alt="Heatmap placeholder" style={{ width: '100%', borderRadius: '8px' }} />
+            <img src="/example_heatmap_black.png" alt="Heatmap" style={{ width: '100%', borderRadius: '8px' }} />
           </div>
           <div>
             <p>How to read this heatmap?</p>
