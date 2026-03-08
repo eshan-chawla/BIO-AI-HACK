@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from 'react';
-import { useQuery } from "convex/react";
+import { useAction, useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { useRouter } from 'next/navigation';
@@ -10,10 +10,15 @@ import ThreeDMolViewer from '../../components/ThreeDMolViewer';
 export default function AnalysisPage({ params }: { params: Promise<{ id: Id<"analysis"> }> }) {
   const { id } = use(params);
   const analysis = useQuery(api.analysis.get, { id });
+  const predictAlternateLigands = useAction(api.tamarind.predictAlternateLigands);
+  const addJobNameToAnalysis = useMutation(api.analysis.addJobNameToAnalysis);
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [proteinContent, setProteinContent] = useState<string | null>(null);
   const [ligandContent, setLigandContent] = useState<string | null>(null);
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [isRetrieving, setIsRetrieving] = useState(false);
+  const retrieveResults = useAction(api.tamarind.retrieveResults);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -61,6 +66,47 @@ export default function AnalysisPage({ params }: { params: Promise<{ id: Id<"ana
     router.push('/signin');
   };
 
+  const handlePredict = async () => {
+    if (!proteinContent || !ligandContent || !analysis) return;
+    setIsPredicting(true);
+    try {
+      const jobName = await predictAlternateLigands({
+        proteinFileContent: proteinContent,
+        proteinFileName: analysis.proteinFileName,
+        ligandFileContent: ligandContent,
+        ligandFileName: analysis.ligandFileName,
+      });
+      await addJobNameToAnalysis({ analysisId: analysis._id, jobName });
+      alert(`Job submitted successfully! Job Name: ${jobName}`);
+    } catch (error) {
+      console.error("Prediction failed:", error);
+      alert(`Error: ${(error as Error).message}`);
+    } finally {
+      setIsPredicting(false);
+    }
+  };
+
+  const handleRetrieve = async () => {
+    if (!analysis?.jobName) {
+      alert("Please submit a prediction job first.");
+      return;
+    }
+    setIsRetrieving(true);
+    try {
+      const result = await retrieveResults({ 
+        analysisId: analysis._id,
+        jobName: analysis.jobName,
+        ligandFileName: analysis.ligandFileName 
+      });
+      alert(result.message);
+    } catch (error) {
+      console.error("Result retrieval failed:", error);
+      alert(`Error: ${(error as Error).message}`);
+    } finally {
+      setIsRetrieving(false);
+    }
+  };
+
   if (!analysis || !analysis.proteinFileName || !analysis.ligandFileName) {
     return <div>Loading...</div>;
   }
@@ -92,6 +138,7 @@ export default function AnalysisPage({ params }: { params: Promise<{ id: Id<"ana
       <main className="flex min-h-screen w-full flex-col items-center justify-start py-32 px-16 bg-white dark:bg-black sm:items-start" style={{ marginLeft: isMenuOpen ? '250px' : '0', transition: 'margin-left 0.3s ease-in-out' }}>
         <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>Analysis Details</h1>
         <p>Analysis ID: {analysis._id}</p>
+        {analysis.jobName && <p>Job Name: {analysis.jobName}</p>}
         
         <div style={{ display: 'flex', gap: '20px', marginTop: '2rem' }}>
           <div>
@@ -109,6 +156,44 @@ export default function AnalysisPage({ params }: { params: Promise<{ id: Id<"ana
             </p>
           </div>
         </div>
+
+        <div style={{ marginTop: '2rem', width: '100%', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          <button 
+            onClick={handlePredict}
+            disabled={isPredicting || !!analysis.jobName}
+            style={{ 
+              padding: '10px 20px', 
+              background: isPredicting || !!analysis.jobName ? '#ccc' : '#0070f3', 
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: '4px', 
+              cursor: isPredicting || !!analysis.jobName ? 'not-allowed' : 'pointer' 
+            }}
+          >
+            {isPredicting ? 'Predicting...' : (analysis.jobName ? 'Prediction Submitted' : 'Predict Alternate Ligands')}
+          </button>
+          <button 
+            onClick={handleRetrieve}
+            disabled={isRetrieving || !analysis.jobName}
+            style={{ 
+              padding: '10px 20px', 
+              background: isRetrieving || !analysis.jobName ? '#ccc' : '#0070f3', 
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: '4px', 
+              cursor: isRetrieving || !analysis.jobName ? 'not-allowed' : 'pointer' 
+            }}
+          >
+            {isRetrieving ? 'Retrieving...' : 'Retrieve Results'}
+          </button>
+        </div>
+
+        {analysis.resultData && (
+          <div style={{ marginTop: '2rem', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h2>Predicted Ligands</h2>
+            <ThreeDMolViewer fileContent={analysis.resultData} format="sdf" />
+          </div>
+        )}
       </main>
     </div>
   );

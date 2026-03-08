@@ -7,5 +7,7 @@ export default defineSchema({
     ligandFileId: v.id("_storage"),
     proteinFileName: v.string(),
     ligandFileName: v.string(),
+    jobName: v.optional(v.string()),
+    resultData: v.optional(v.string()),
   }),
 });

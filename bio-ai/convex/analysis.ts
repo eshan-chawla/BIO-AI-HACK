@@ -23,6 +23,26 @@ export const create = mutation({
   },
 });
 
+export const addJobNameToAnalysis = mutation({
+  args: {
+    analysisId: v.id("analysis"),
+    jobName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.analysisId, { jobName: args.jobName });
+  },
+});
+
+export const addResultDataToAnalysis = mutation({
+  args: {
+    analysisId: v.id("analysis"),
+    resultData: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.analysisId, { resultData: args.resultData });
+  },
+});
+
 export const get = query({
   args: { id: v.id("analysis") },
   handler: async (ctx, args) => {
