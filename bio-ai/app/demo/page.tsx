@@ -131,6 +131,7 @@ $$$$
 `,
         smiles: "CC(C)C[C@H](C)O",
     radarImg: "/radar_samples_1.png",
+    csvUrl: "/samples_1.csv",
   },
   "Ligand 2": {
     sdf: `
@@ -170,6 +171,7 @@ $$$$
 `,
     smiles: "CN(C)C(=O)NC1=CC=C(C=C1)C(C)=O",
     radarImg: "/radar_samples_3.png",
+    csvUrl: "/samples_3.csv",
   },
   "Ligand 3": {
     sdf: `
@@ -207,6 +209,7 @@ $$$$
 `,
     smiles: "CC1=CC(=O)C=C(C1)C",
     radarImg: "/radar_samples_4.png",
+    csvUrl: "/samples_4.csv",
   },
   "Ligand 4": {
     sdf: `
@@ -239,6 +242,7 @@ $$$$
 `,
     smiles: "COC1=CC=C(C=C1)C(C)C(=O)O",
     radarImg: "/radar_samples_5.png",
+    csvUrl: "/samples_5.csv",
   },
 };
 
@@ -376,6 +380,7 @@ export default function DemoPage() {
             <ThreeDMolViewer fileContent={ligandData[activeLigand].sdf} format="sdf" />
             <img src={ligandData[activeLigand].radarImg} alt="Radar chart" style={{ borderRadius: '8px', width: '400px', height: '400px' }} />
           </div>
+          <a href={ligandData[activeLigand].csvUrl} download style={{ display: 'inline-block', marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#0070f3', color: '#fff', borderRadius: '4px', textDecoration: 'none' }}>Download ADMET Prediction Scores CSV</a>
           <p style={{ marginTop: '1rem' }}>How do I read this summary? <a href="#" onClick={(e) => { e.preventDefault(); setIsInfoDialogOpen(true); }} style={{ color: '#0070f3' }}>Click to expand</a></p>
         </div>
       </section>
