@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { useRouter } from 'next/navigation';
+import ThreeDMolViewer from '../../components/ThreeDMolViewer';
 
 export default function AnalysisPage({ params }: { params: Promise<{ id: Id<"analysis"> }> }) {
   const { id } = use(params);
@@ -52,11 +53,26 @@ export default function AnalysisPage({ params }: { params: Promise<{ id: Id<"ana
           </button>
         </div>
       </div>
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-start py-32 px-16 bg-white dark:bg-black sm:items-start" style={{ marginLeft: isMenuOpen ? '250px' : '0', transition: 'margin-left 0.3s ease-in-out' }}>
+      <main className="flex min-h-screen w-full flex-col items-center justify-start py-32 px-16 bg-white dark:bg-black sm:items-start" style={{ marginLeft: isMenuOpen ? '250px' : '0', transition: 'margin-left 0.3s ease-in-out' }}>
         <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>Analysis Details</h1>
         <p>Analysis ID: {analysis._id}</p>
-        {analysis.proteinUrl && <p>Protein File: <a href={analysis.proteinUrl} target="_blank" rel="noopener noreferrer">Download</a></p>}
-        {analysis.ligandUrl && <p>Ligand File: <a href={analysis.ligandUrl} target="_blank" rel="noopener noreferrer">Download</a></p>}
+        
+        <div style={{ display: 'flex', gap: '20px', marginTop: '2rem' }}>
+          <div>
+            <h2>Protein Structure</h2>
+            <ThreeDMolViewer fileUrl={analysis.proteinUrl} format="pdb" />
+            <p style={{ marginTop: '10px' }}>
+              Protein File: <a href={analysis.proteinUrl || '#'} target="_blank" rel="noopener noreferrer">Download</a>
+            </p>
+          </div>
+          <div>
+            <h2>Ligand Structure</h2>
+            <ThreeDMolViewer fileUrl={analysis.ligandUrl} format="sdf" />
+            <p style={{ marginTop: '10px' }}>
+              Ligand File: <a href={analysis.ligandUrl || '#'} target="_blank" rel="noopener noreferrer">Download</a>
+            </p>
+          </div>
+        </div>
       </main>
     </div>
   );
