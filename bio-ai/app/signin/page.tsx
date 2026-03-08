@@ -17,7 +17,7 @@ export default function SignIn() {
     if (email === 'admin@admin.com' && password === 'admin') {
       localStorage.setItem('isAuthenticated', 'true');
       console.log('Sign-in successful');
-      router.push('/'); // Redirect to the dashboard
+      router.push('/dashboard'); // Redirect to the dashboard
     } else {
       setError('Invalid email or password');
     }
