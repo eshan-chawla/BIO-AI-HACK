@@ -34,7 +34,6 @@ export default function ReportsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px 20px' }}>
             <button onClick={() => router.push('/analyse')} style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: 'black' }}>Analyse</button>
             <button onClick={() => router.push('/reports')} style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: 'black' }}>View Reports</button>
-            <button style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: 'black' }}>Settings</button>
           </div>
         </div>
         <div style={{ padding: '10px 20px', marginBottom: '20px' }}>

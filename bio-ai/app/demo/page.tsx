@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import ThreeDMolViewer from '../components/ThreeDMolViewer';
 
 import InfoDialog from '../components/InfoDialog';
@@ -254,6 +255,13 @@ export default function DemoPage() {
   const [ligandContent, setLigandContent] = useState<string | null>(null);
   const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
   const [isHeatmapInfoDialogOpen, setIsHeatmapInfoDialogOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    router.push('/signin');
+  };
 
   useEffect(() => {
     const fetchProtein = async () => {
@@ -275,117 +283,140 @@ export default function DemoPage() {
   }, []);
 
   return (
-    <div style={{ backgroundColor: '#111', color: '#eee', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <header style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>Drug Prediction Analysis</h1>
-        <p style={{ color: '#aaa' }}>About: Generate drug candidates for your target protein</p>
-        <p style={{ color: '#aaa' }}>Goal: Rank drug predictions based on RMSD score and toxicity levels</p>
-      </header>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
-        <div style={{ backgroundColor: '#222', padding: '1rem', borderRadius: '8px' }}>
-          <label htmlFor="question-input" style={{ display: 'block', marginBottom: '0.5rem' }}>Ask questions about your report</label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input id="question-input" type="text" placeholder="Ask a question..." style={{ flexGrow: 1, padding: '0.5rem', borderRadius: '4px', border: 'none', backgroundColor: '#333', color: '#eee' }} />
-            <button style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: 'none', backgroundColor: '#0070f3', color: '#fff', cursor: 'pointer' }}>Send</button>
+    <div style={{ backgroundColor: '#111', color: '#eee', fontFamily: 'sans-serif' }}>
+      <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ position: 'fixed', top: '20px', left: '20px', zIndex: 110, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <span style={{ display: 'block', width: '25px', height: '3px', background: '#eee', borderRadius: '3px' }}></span>
+        <span style={{ display: 'block', width: '25px', height: '3px', background: '#eee', borderRadius: '3px' }}></span>
+        <span style={{ display: 'block', width: '25px', height: '3px', background: '#eee', borderRadius: '3px' }}></span>
+      </button>
+      <div style={{ position: 'fixed', top: '0', left: isMenuOpen ? '0' : '-250px', width: '250px', height: '100vh', background: '#222', boxShadow: '2px 0 8px rgba(0,0,0,0.1)', zIndex: 100, transition: 'left 0.3s ease-in-out', paddingTop: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px 20px' }}>
+            <button onClick={() => router.push('/analyse')} style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: '#eee' }}>Analyse</button>
+            <button onClick={() => router.push('/reports')} style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: '#eee' }}>View Reports</button>
           </div>
         </div>
-        <div style={{ backgroundColor: '#222', padding: '1rem', borderRadius: '8px', height: '100%' }}>
-          <p style={{ fontStyle: 'italic', color: '#aaa' }}>AI Agent: before questions, after questions</p>
-          <div style={{ marginTop: '1rem', borderTop: '1px solid #333', paddingTop: '1rem' }}>
-            <p><span style={{ fontWeight: 'bold', color: '#0070f3' }}>User:</span> What is RMSD?</p>
-            <p style={{ marginTop: '0.5rem' }}><span style={{ fontWeight: 'bold', color: '#eee' }}>AI:</span> Root Mean Square Deviation (RMSD) score is a value that shows how much two 3D structures differ...</p>
-          </div>
+        <div style={{ padding: '10px 20px', marginBottom: '20px' }}>
+          <button
+            onClick={handleLogout}
+            style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: '#eee', width: '100%' }}
+          >
+            Logout
+          </button>
         </div>
       </div>
+      <main style={{ marginLeft: isMenuOpen ? '250px' : '0', transition: 'margin-left 0.3s ease-in-out', padding: '2rem', paddingTop: '5rem' }}>
+        <header style={{ marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>Drug Prediction Analysis</h1>
+          <p style={{ color: '#aaa' }}>About: Generate drug candidates for your target protein</p>
+          <p style={{ color: '#aaa' }}>Goal: Rank drug predictions based on RMSD score and toxicity levels</p>
+        </header>
 
-      <section style={{ marginTop: '2rem' }}>
-        <h2 style={{ fontSize: '1.8rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>Input data</h2>
-        <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem' }}>
-          <div>
-            {proteinContent && <ThreeDMolViewer fileContent={proteinContent} format="pdb" />}
-            <p style={{ textAlign: 'center', color: '#eee', marginTop: '0.5rem' }}>6W70</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+          <div style={{ backgroundColor: '#222', padding: '1rem', borderRadius: '8px' }}>
+            <label htmlFor="question-input" style={{ display: 'block', marginBottom: '0.5rem' }}>Ask questions about your report</label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input id="question-input" type="text" placeholder="Ask a question..." style={{ flexGrow: 1, padding: '0.5rem', borderRadius: '4px', border: 'none', backgroundColor: '#333', color: '#eee' }} />
+              <button style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: 'none', backgroundColor: '#0070f3', color: '#fff', cursor: 'pointer' }}>Send</button>
+            </div>
           </div>
-          <div>
-            {ligandContent && <ThreeDMolViewer fileContent={ligandContent} format="sdf" />}
-            <p style={{ textAlign: 'center', color: '#eee', marginTop: '0.5rem' }}>SO4</p>
+          <div style={{ backgroundColor: '#222', padding: '1rem', borderRadius: '8px', height: '100%' }}>
+            <p style={{ fontStyle: 'italic', color: '#aaa' }}>AI Agent: before questions, after questions</p>
+            <div style={{ marginTop: '1rem', borderTop: '1px solid #333', paddingTop: '1rem' }}>
+              <p><span style={{ fontWeight: 'bold', color: '#0070f3' }}>User:</span> What is RMSD?</p>
+              <p style={{ marginTop: '0.5rem' }}><span style={{ fontWeight: 'bold', color: '#eee' }}>AI:</span> Root Mean Square Deviation (RMSD) score is a value that shows how much two 3D structures differ...</p>
+            </div>
           </div>
         </div>
-        <div style={{ marginTop: '1rem' }}>
-          <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #333' }}>
-            <button onClick={() => setActiveTab('Protein Structure')} style={{ background: activeTab === 'Protein Structure' ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>Protein Structure</button>
-            <button onClick={() => setActiveTab('Ligand Options')} style={{ background: activeTab === 'Ligand Options' ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>Ligand Options</button>
-            <button onClick={() => setActiveTab('Parameters')} style={{ background: activeTab === 'Parameters' ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>Parameters</button>
-          </div>
-          <div style={{ padding: '1rem', backgroundColor: '#222', marginTop: '1rem', borderRadius: '8px', minHeight: '150px' }}>
-            {activeTab === 'Protein Structure' && (
-              <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#eee' }}>PDB Protein Structure</h3>
-                <p style={{ marginTop: '1rem', color: '#aaa' }}>Visit the Protein Data Bank: <a href="https://www.rcsb.org/" target="_blank" rel="noopener noreferrer" style={{ color: '#0070f3' }}>https://www.rcsb.org/</a></p>
-                <p style={{ marginTop: '0.5rem', color: '#aaa' }}>Enter your protein ID and download the corresponding PDB file.</p>
-              </div>
-            )}
-            {activeTab === 'Ligand Options' && (
-              <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#eee' }}>Ligand Options</h3>
-                <p style={{ marginTop: '1rem', color: '#aaa' }}>In the PDB entry, go to the “Ligand” tab.</p>
-                <p style={{ marginTop: '0.5rem', color: '#aaa' }}>Click “Ligand Definition and Summary” tab to view available ligand options.</p>
-                <p style={{ marginTop: '0.5rem', color: '#aaa' }}>Download the SDF file for your reference ligand.</p>
-              </div>
-            )}
-            {activeTab === 'Parameters' && (
-              <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#eee' }}>Parameters</h3>
-                <ul style={{ listStyle: 'disc', paddingLeft: '20px', marginTop: '1rem', color: '#aaa' }}>
-                  <li style={{ marginBottom: '0.5rem' }}><strong style={{ color: '#eee' }}>Number of Samples:</strong> How many ligand candidates DrugFlow will generate. Default: 5 candidates per job.</li>
-                  <li style={{ marginBottom: '0.5rem' }}><strong style={{ color: '#eee' }}>Number of Batches:</strong> How many separate jobs run in parallel.</li>
-                  <li><strong style={{ color: '#eee' }}>Distance Cutoff:</strong> Defines the binding pocket radius around the reference ligand. Default: 8 Å, used to score how well the ligand fits in the protein.</li>
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
 
-      <section style={{ marginTop: '2rem' }}>
-        <h2 style={{ fontSize: '1.8rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>Overall ranking</h2>
-        <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
-          {Object.keys(ligandData).map((key, i) => (
-            <li key={key}>{i < 3 ? '⭐' : ''} Top{i+1}: {key}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section style={{ marginTop: '2rem' }}>
-        <h2 style={{ fontSize: '1.8rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>Score heatmap</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '1rem' }}>
-          <div>
-            <p>How to read this heatmap? <a href="#" onClick={(e) => { e.preventDefault(); setIsHeatmapInfoDialogOpen(true); }} style={{ color: '#0070f3' }}>Click to expand</a></p>
-            <img src="/example_heatmap_black.png" alt="Heatmap" style={{ width: '100%', borderRadius: '8px' }} />
-          </div>
-          <div>
-            <p>How to read this heatmap?</p>
-            <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Vertical: Ligand candidates<br/>Horizontal: Ranked scores<br/>Top RMSD: BBB, CCC, DDD, EEE<br/>Yellow means its better, Purple means it sucks</p>
-          </div>
-        </div>
-      </section>
-
-      <section style={{ marginTop: '2rem' }}>
-        <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #333' }}>
-          {(Object.keys(ligandData) as Array<keyof typeof ligandData>).map(key => (
-            <button key={key} onClick={() => setActiveLigand(key)} style={{ background: activeLigand === key ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>{key}</button>
-          ))}
-        </div>
-        <div style={{ padding: '1rem', backgroundColor: '#222', marginTop: '1rem', borderRadius: '8px' }}>
-          <p>{ligandData[activeLigand].smiles}</p>
+        <section style={{ marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.8rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>Input data</h2>
           <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem' }}>
-            <ThreeDMolViewer fileContent={ligandData[activeLigand].sdf} format="sdf" />
-            <img src={ligandData[activeLigand].radarImg} alt="Radar chart" style={{ borderRadius: '8px', width: '400px', height: '400px' }} />
+            <div>
+              {proteinContent && <ThreeDMolViewer fileContent={proteinContent} format="pdb" />}
+              <p style={{ textAlign: 'center', color: '#eee', marginTop: '0.5rem' }}>6W70</p>
+            </div>
+            <div>
+              {ligandContent && <ThreeDMolViewer fileContent={ligandContent} format="sdf" />}
+              <p style={{ textAlign: 'center', color: '#eee', marginTop: '0.5rem' }}>SO4</p>
+            </div>
           </div>
-          <a href={ligandData[activeLigand].csvUrl} download style={{ display: 'inline-block', marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#0070f3', color: '#fff', borderRadius: '4px', textDecoration: 'none' }}>Download ADMET Prediction Scores CSV</a>
-          <p style={{ marginTop: '1rem' }}>How do I read this summary? <a href="#" onClick={(e) => { e.preventDefault(); setIsInfoDialogOpen(true); }} style={{ color: '#0070f3' }}>Click to expand</a></p>
-        </div>
-      </section>
+          <div style={{ marginTop: '1rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #333' }}>
+              <button onClick={() => setActiveTab('Protein Structure')} style={{ background: activeTab === 'Protein Structure' ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>Protein Structure</button>
+              <button onClick={() => setActiveTab('Ligand Options')} style={{ background: activeTab === 'Ligand Options' ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>Ligand Options</button>
+              <button onClick={() => setActiveTab('Parameters')} style={{ background: activeTab === 'Parameters' ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>Parameters</button>
+            </div>
+            <div style={{ padding: '1rem', backgroundColor: '#222', marginTop: '1rem', borderRadius: '8px', minHeight: '150px' }}>
+              {activeTab === 'Protein Structure' && (
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#eee' }}>PDB Protein Structure</h3>
+                  <p style={{ marginTop: '1rem', color: '#aaa' }}>Visit the Protein Data Bank: <a href="https://www.rcsb.org/" target="_blank" rel="noopener noreferrer" style={{ color: '#0070f3' }}>https://www.rcsb.org/</a></p>
+                  <p style={{ marginTop: '0.5rem', color: '#aaa' }}>Enter your protein ID and download the corresponding PDB file.</p>
+                </div>
+              )}
+              {activeTab === 'Ligand Options' && (
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#eee' }}>Ligand Options</h3>
+                  <p style={{ marginTop: '1rem', color: '#aaa' }}>In the PDB entry, go to the “Ligand” tab.</p>
+                  <p style={{ marginTop: '0.5rem', color: '#aaa' }}>Click “Ligand Definition and Summary” tab to view available ligand options.</p>
+                  <p style={{ marginTop: '0.5rem', color: '#aaa' }}>Download the SDF file for your reference ligand.</p>
+                </div>
+              )}
+              {activeTab === 'Parameters' && (
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#eee' }}>Parameters</h3>
+                  <ul style={{ listStyle: 'disc', paddingLeft: '20px', marginTop: '1rem', color: '#aaa' }}>
+                    <li style={{ marginBottom: '0.5rem' }}><strong style={{ color: '#eee' }}>Number of Samples:</strong> How many ligand candidates DrugFlow will generate. Default: 5 candidates per job.</li>
+                    <li style={{ marginBottom: '0.5rem' }}><strong style={{ color: '#eee' }}>Number of Batches:</strong> How many separate jobs run in parallel.</li>
+                    <li><strong style={{ color: '#eee' }}>Distance Cutoff:</strong> Defines the binding pocket radius around the reference ligand. Default: 8 Å, used to score how well the ligand fits in the protein.</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section style={{ marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.8rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>Overall ranking</h2>
+          <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
+            {Object.keys(ligandData).map((key, i) => (
+              <li key={key}>{i < 3 ? '⭐' : ''} Top{i+1}: {key}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section style={{ marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.8rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>Score heatmap</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '1rem' }}>
+            <div>
+              <p>How to read this heatmap? <a href="#" onClick={(e) => { e.preventDefault(); setIsHeatmapInfoDialogOpen(true); }} style={{ color: '#0070f3' }}>Click to expand</a></p>
+              <img src="/example_heatmap_black.png" alt="Heatmap" style={{ width: '100%', borderRadius: '8px' }} />
+            </div>
+            <div>
+              <p>How to read this heatmap?</p>
+              <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Vertical: Ligand candidates<br/>Horizontal: Ranked scores<br/>Top RMSD: BBB, CCC, DDD, EEE<br/>Yellow means its better, Purple means it sucks</p>
+            </div>
+          </div>
+        </section>
+
+        <section style={{ marginTop: '2rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #333' }}>
+            {(Object.keys(ligandData) as Array<keyof typeof ligandData>).map(key => (
+              <button key={key} onClick={() => setActiveLigand(key)} style={{ background: activeLigand === key ? '#333' : 'none', border: 'none', color: '#eee', padding: '0.5rem 1rem', cursor: 'pointer' }}>{key}</button>
+            ))}
+          </div>
+          <div style={{ padding: '1rem', backgroundColor: '#222', marginTop: '1rem', borderRadius: '8px' }}>
+            <p>{ligandData[activeLigand].smiles}</p>
+            <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem' }}>
+              <ThreeDMolViewer fileContent={ligandData[activeLigand].sdf} format="sdf" />
+              <img src={ligandData[activeLigand].radarImg} alt="Radar chart" style={{ borderRadius: '8px', width: '400px', height: '400px' }} />
+            </div>
+            <a href={ligandData[activeLigand].csvUrl} download style={{ display: 'inline-block', marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#0070f3', color: '#fff', borderRadius: '4px', textDecoration: 'none' }}>Download ADMET Prediction Scores CSV</a>
+            <p style={{ marginTop: '1rem' }}>How do I read this summary? <a href="#" onClick={(e) => { e.preventDefault(); setIsInfoDialogOpen(true); }} style={{ color: '#0070f3' }}>Click to expand</a></p>
+          </div>
+        </section>
+      </main>
 
       {isInfoDialogOpen && <InfoDialog onClose={() => setIsInfoDialogOpen(false)} />}
       {isHeatmapInfoDialogOpen && <HeatmapInfoDialog onClose={() => setIsHeatmapInfoDialogOpen(false)} />}

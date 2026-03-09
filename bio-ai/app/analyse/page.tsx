@@ -77,7 +77,6 @@ export default function Analyse() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px 20px' }}>
             <button onClick={() => router.push('/analyse')} style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: 'black' }}>Analyse</button>
             <button onClick={() => router.push('/reports')} style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: 'black' }}>View Reports</button>
-            <button style={{ background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer', textAlign: 'left', color: 'black' }}>Settings</button>
           </div>
         </div>
         <div style={{ padding: '10px 20px', marginBottom: '20px' }}>
@@ -90,7 +89,13 @@ export default function Analyse() {
         </div>
       </div>
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-start py-32 px-16 bg-white dark:bg-black sm:items-start" style={{ marginLeft: isMenuOpen ? '250px' : '0', transition: 'margin-left 0.3s ease-in-out' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>Analyse</h1>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Analyse</h1>
+        <button 
+          onClick={() => router.push('/demo')}
+          style={{ marginBottom: '2rem', padding: '10px 20px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          See Sample Report
+        </button>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '400px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '5px' }}>Protein (PDB):</label>
